@@ -72,12 +72,29 @@ public class DefaultResultSetHandler implements ResultSetHandler {
 
   private static final Object DEFERRED = new Object();
 
+  /**
+   * 执行器
+   */
   private final Executor executor;
+  /**
+   * 配置信息
+   */
   private final Configuration configuration;
+  /**
+   * 处理后的statement
+   */
   private final MappedStatement mappedStatement;
+  /**
+   * 逻辑分页
+   */
   private final RowBounds rowBounds;
+  /**
+   * 参数解析器
+   */
   private final ParameterHandler parameterHandler;
+  /*结果集解析器*/
   private final ResultHandler<?> resultHandler;
+  /*sql 解析*/
   private final BoundSql boundSql;
   private final TypeHandlerRegistry typeHandlerRegistry;
   private final ObjectFactory objectFactory;
