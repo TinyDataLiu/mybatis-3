@@ -28,7 +28,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * 语句集操作规范
+ * 语句集执行者
  *
  * @author Clinton Begin
  */
