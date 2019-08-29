@@ -24,6 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
+ * 用于创建对象
  * 通过反射机制，完成数据库类型到JavaBean的转换
  *
  * @author Clinton Begin
