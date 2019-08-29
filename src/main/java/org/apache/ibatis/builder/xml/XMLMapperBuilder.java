@@ -49,6 +49,8 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
+ * 用于解析Mapper.xml配制间
+ *
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
