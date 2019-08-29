@@ -33,6 +33,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
+ * 二级缓存的实现 通过代理来实现跨会话缓存的 Executor
+ *
  * @author Clinton Begin
  * @author Eduardo Macarron
  */
