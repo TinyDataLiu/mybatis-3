@@ -97,7 +97,6 @@ public class XMLMapperBuilder extends BaseBuilder {
       configuration.addLoadedResource(resource);
       bindMapperForNamespace();
     }
-
     parsePendingResultMaps();
     parsePendingCacheRefs();
     parsePendingStatements();
@@ -422,6 +421,7 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   private void bindMapperForNamespace() {
+    //通过namespace获取类型
     String namespace = builderAssistant.getCurrentNamespace();
     if (namespace != null) {
       Class<?> boundType = null;
@@ -436,6 +436,7 @@ public class XMLMapperBuilder extends BaseBuilder {
           // to prevent loading again this resource from the mapper interface
           // look at MapperAnnotationBuilder#loadXmlResource
           configuration.addLoadedResource("namespace:" + namespace);
+          // 最终还是调用addMapper方法
           configuration.addMapper(boundType);
         }
       }

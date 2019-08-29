@@ -68,6 +68,11 @@ public class SqlSessionFactoryBuilder {
     return build(inputStream, null, null);
   }
 
+  /**
+   * @param inputStream
+   * @param environment
+   * @return
+   */
   public SqlSessionFactory build(InputStream inputStream, String environment) {
     return build(inputStream, environment, null);
   }
@@ -79,6 +84,7 @@ public class SqlSessionFactoryBuilder {
   public SqlSessionFactory build(InputStream inputStream, String environment, Properties properties) {
     try {
       XMLConfigBuilder parser = new XMLConfigBuilder(inputStream, environment, properties);
+      /*调用build 方法返回一个 DefaultSqlSessionFactory*/
       return build(parser.parse());
     } catch (Exception e) {
       throw ExceptionFactory.wrapException("Error building SqlSession.", e);
@@ -92,6 +98,14 @@ public class SqlSessionFactoryBuilder {
     }
   }
 
+  /**
+   * 最终都会调用这个方法来创建 DefaultSqlSessionFactory
+   * <p>
+   * 其他方法都是 在讲 传入的参数 解析 Configuration
+   *
+   * @param config
+   * @return
+   */
   public SqlSessionFactory build(Configuration config) {
     return new DefaultSqlSessionFactory(config);
   }

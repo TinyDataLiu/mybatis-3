@@ -70,9 +70,11 @@ public class MapperRegistry {
         // otherwise the binding may automatically be attempted by the
         // mapper parser. If the type is already known, it won't try.
         MapperAnnotationBuilder parser = new MapperAnnotationBuilder(config, type);
+        // 放入全局配置文件中
         parser.parse();
         loadCompleted = true;
       } finally {
+        //如果没有完成就移除
         if (!loadCompleted) {
           knownMappers.remove(type);
         }
@@ -88,6 +90,8 @@ public class MapperRegistry {
   }
 
   /**
+   * 通过包名注册 mapper
+   *
    * @since 3.2.2
    */
   public void addMappers(String packageName, Class<?> superType) {
