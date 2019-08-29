@@ -79,12 +79,15 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {
+      // 处理eq hashcode 方法等
       if (Object.class.equals(method.getDeclaringClass())) {
         return method.invoke(this, args);
       } else if (method.isDefault()) {
         if (privateLookupInMethod == null) {
+          /*默认实现*/
           return invokeDefaultMethodJava8(proxy, method, args);
         } else {
+          /*默认实现方法*/
           return invokeDefaultMethodJava9(proxy, method, args);
         }
       }
@@ -92,6 +95,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
       throw ExceptionUtil.unwrapThrowable(t);
     }
     final MapperMethod mapperMethod = cachedMapperMethod(method);
+    /*执行sql语句 ，这里就是我们为什么不需要实现类的地方， 因为我们的实现就是sql 将sql解析以后就行了， 不用再写实现*/
     return mapperMethod.execute(sqlSession, args);
   }
 
