@@ -96,6 +96,8 @@ import java.util.Set;
 import java.util.function.BiFunction;
 
 /**
+ * 核心配置文件：在在SQLSessionFacortyBuiler().build() 的时候创建
+ *
  * @author Clinton Begin
  */
 public class Configuration {
@@ -178,7 +180,9 @@ public class Configuration {
     this.environment = environment;
   }
 
+
   public Configuration() {
+    /*设置别名，这也就是为什么我们再Mapper.xml里面可以使用很多别别名的原因*/
     typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
     typeAliasRegistry.registerAlias("MANAGED", ManagedTransactionFactory.class);
 
