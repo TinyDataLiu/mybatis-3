@@ -93,7 +93,7 @@ public class MapperRegistry {
   }
 
   /**
-   * 通过包名注册 mapper
+   * 通过包名注册mapper
    *
    * @since 3.2.2
    */
@@ -101,6 +101,7 @@ public class MapperRegistry {
     ResolverUtil<Class<?>> resolverUtil = new ResolverUtil<>();
     resolverUtil.find(new ResolverUtil.IsA(superType), packageName);
     Set<Class<? extends Class<?>>> mapperSet = resolverUtil.getClasses();
+    // 循环包下的类名
     for (Class<?> mapperClass : mapperSet) {
       addMapper(mapperClass);
     }

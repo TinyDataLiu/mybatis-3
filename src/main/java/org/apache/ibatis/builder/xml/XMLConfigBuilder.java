@@ -110,21 +110,33 @@ public class XMLConfigBuilder extends BaseBuilder {
   private void parseConfiguration(XNode root) {
     try {
       //issue #117 read properties first
-      //解析
+      //解析 <properties/>
       propertiesElement(root.evalNode("properties"));
+      //解析<settings/> 标签
       Properties settings = settingsAsProperties(root.evalNode("settings"));
+      // log
       loadCustomVfs(settings);
+      // log
       loadCustomLogImpl(settings);
+      // 解析 typeAliases
       typeAliasesElement(root.evalNode("typeAliases"));
+      // 解析 plugins
       pluginElement(root.evalNode("plugins"));
+      // objectFactory
       objectFactoryElement(root.evalNode("objectFactory"));
+      // objectWrapperFactory
       objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
+      // reflectorFactory
       reflectorFactoryElement(root.evalNode("reflectorFactory"));
       settingsElement(settings);
       // read it after objectFactory and objectWrapperFactory issue #631
+      // environments
       environmentsElement(root.evalNode("environments"));
+      // 用于解析不同数据库的厂商
       databaseIdProviderElement(root.evalNode("databaseIdProvider"));
+      // 用于数据类型的解析
       typeHandlerElement(root.evalNode("typeHandlers"));
+      // mapper 解析，接口以及 配置文件的对应关系
       mapperElement(root.evalNode("mappers"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
@@ -227,17 +239,27 @@ public class XMLConfigBuilder extends BaseBuilder {
     }
   }
 
+  /**
+   * 解析 properties 标签
+   *
+   * @param context
+   * @throws Exception
+   */
   private void propertiesElement(XNode context) throws Exception {
     if (context != null) {
       Properties defaults = context.getChildrenAsProperties();
       String resource = context.getStringAttribute("resource");
       String url = context.getStringAttribute("url");
+      // 判断resource/ url属性是否存在
       if (resource != null && url != null) {
         throw new BuilderException("The properties element cannot specify both a URL and a resource based property file reference.  Please specify one or the other.");
       }
+      // 如果都配置了会优先加载resource 属性
       if (resource != null) {
         defaults.putAll(Resources.getResourceAsProperties(resource));
-      } else if (url != null) {
+      }
+      // 如果没有就检查 url
+      else if (url != null) {
         defaults.putAll(Resources.getUrlAsProperties(url));
       }
       Properties vars = configuration.getVariables();
@@ -245,6 +267,7 @@ public class XMLConfigBuilder extends BaseBuilder {
         defaults.putAll(vars);
       }
       parser.setVariables(defaults);
+      // 将properties 设置到
       configuration.setVariables(defaults);
     }
   }
@@ -286,18 +309,29 @@ public class XMLConfigBuilder extends BaseBuilder {
       for (XNode child : context.getChildren()) {
         String id = child.getStringAttribute("id");
         if (isSpecifiedEnvironment(id)) {
+          // 创建txFactory
           TransactionFactory txFactory = transactionManagerElement(child.evalNode("transactionManager"));
+          // 创建DataSourceFactory
           DataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
+          // 数据源创建
           DataSource dataSource = dsFactory.getDataSource();
+          // 数据源以及事务管理器初始化完成
           Environment.Builder environmentBuilder = new Environment.Builder(id)
             .transactionFactory(txFactory)
             .dataSource(dataSource);
+          // 设置Environment
           configuration.setEnvironment(environmentBuilder.build());
         }
       }
     }
   }
 
+  /**
+   * 不同厂商的解析
+   *
+   * @param context
+   * @throws Exception
+   */
   private void databaseIdProviderElement(XNode context) throws Exception {
     DatabaseIdProvider databaseIdProvider = null;
     if (context != null) {
@@ -339,6 +373,9 @@ public class XMLConfigBuilder extends BaseBuilder {
     throw new BuilderException("Environment declaration requires a DataSourceFactory.");
   }
 
+  /**
+   * @param parent
+   */
   private void typeHandlerElement(XNode parent) {
     if (parent != null) {
       for (XNode child : parent.getChildren()) {
@@ -389,10 +426,12 @@ public class XMLConfigBuilder extends BaseBuilder {
         /*解析 package 标签
          * */
         /*<package name="com.alice"/>*/
+        // 根据包名进行解析
         if ("package".equals(child.getName())) {
           String mapperPackage = child.getStringAttribute("name");
           configuration.addMappers(mapperPackage);
         } else {
+          // 单个解析 ，只能配置一个属性，如果配置多个将报错
           /*<mapper resource="mapper/EmpMapper.xml"/>*/
           String resource = child.getStringAttribute("resource");
           String url = child.getStringAttribute("url");
@@ -415,6 +454,7 @@ public class XMLConfigBuilder extends BaseBuilder {
             Class<?> mapperInterface = Resources.classForName(mapperClass);
             configuration.addMapper(mapperInterface);
           } else {
+            // 三者只能配置一个
             throw new BuilderException("A mapper element may only specify a url, resource or class, but not more than one.");
           }
         }
