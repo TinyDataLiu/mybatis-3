@@ -24,7 +24,8 @@ import java.sql.Connection;
 import java.util.Properties;
 
 /**
- * 默认的事物工厂
+ * ManagedTransactionFactory
+ * 把事务交给容器来管理
  * Creates {@link ManagedTransaction} instances.
  *
  * @author Clinton Begin
