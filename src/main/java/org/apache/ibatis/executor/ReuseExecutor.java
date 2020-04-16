@@ -34,12 +34,15 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 
 /**
- * stmt 复用的执行器
+ * stmt复用的执行器
  *
  * @author Clinton Begin
  */
 public class ReuseExecutor extends BaseExecutor {
 
+  /**
+   * 内部维护一个statementMap
+   */
   private final Map<String, Statement> statementMap = new HashMap<>();
 
   public ReuseExecutor(Configuration configuration, Transaction transaction) {
@@ -85,11 +88,21 @@ public class ReuseExecutor extends BaseExecutor {
     return Collections.emptyList();
   }
 
+  /**
+   * 获取 Statement 从缓存中，拿到
+   *
+   * @param handler
+   * @param statementLog
+   * @return
+   * @throws SQLException
+   */
   private Statement prepareStatement(StatementHandler handler, Log statementLog) throws SQLException {
     Statement stmt;
     BoundSql boundSql = handler.getBoundSql();
     String sql = boundSql.getSql();
+    // 判断是否缓存了，如果缓存了就从缓存中获取，否则创建
     if (hasStatementFor(sql)) {
+      //
       stmt = getStatement(sql);
       applyTransactionTimeout(stmt);
     } else {
@@ -101,6 +114,12 @@ public class ReuseExecutor extends BaseExecutor {
     return stmt;
   }
 
+  /**
+   * 会先去判断 statementMap 是否缓存了，
+   *
+   * @param sql
+   * @return
+   */
   private boolean hasStatementFor(String sql) {
     try {
       return statementMap.keySet().contains(sql) && !statementMap.get(sql).getConnection().isClosed();
