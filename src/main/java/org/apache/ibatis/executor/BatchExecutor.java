@@ -43,7 +43,7 @@ import java.util.List;
 public class BatchExecutor extends BaseExecutor {
 
   public static final int BATCH_UPDATE_RETURN_VALUE = Integer.MIN_VALUE + 1002;
-
+  //保存Statement
   private final List<Statement> statementList = new ArrayList<>();
   private final List<BatchResult> batchResultList = new ArrayList<>();
   private String currentSql;
@@ -80,6 +80,18 @@ public class BatchExecutor extends BaseExecutor {
     return BATCH_UPDATE_RETURN_VALUE;
   }
 
+  /**
+   * 查询是没有batch操作
+   *
+   * @param ms
+   * @param parameterObject
+   * @param rowBounds
+   * @param resultHandler
+   * @param boundSql
+   * @param <E>
+   * @return
+   * @throws SQLException
+   */
   @Override
   public <E> List<E> doQuery(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql)
     throws SQLException {
