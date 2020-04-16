@@ -175,7 +175,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     }
   }
 
-  //
+  // 封装结果集并返回java pojo
   // HANDLE RESULT SETS
   //
   @Override

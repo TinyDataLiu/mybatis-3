@@ -167,6 +167,7 @@ public abstract class BaseExecutor implements Executor {
       if (list != null) {
         handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
       } else {
+        // 从数据库中进行查询
         list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
       }
     } finally {
@@ -220,6 +221,9 @@ public abstract class BaseExecutor implements Executor {
     if (closed) {
       throw new ExecutorException("Executor was closed.");
     }
+//    从 Configuration 中获取 MappedStatement， 然后从 BoundSql 中获取 SQL 信
+//息，创建 CacheKey。这个 CacheKey 就是缓存的 Key。
+//    实际就是 com.alice.p2p.sc.repository.mapper.SysLogMapper.selectList() 等
     CacheKey cacheKey = new CacheKey();
     cacheKey.update(ms.getId());
     cacheKey.update(rowBounds.getOffset());

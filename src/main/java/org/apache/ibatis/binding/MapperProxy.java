@@ -79,6 +79,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {
+      // obj 和 java 8 的默认实现是不不会调用的
       if (Object.class.equals(method.getDeclaringClass())) {
         return method.invoke(this, args);
       } else if (method.isDefault()) {
@@ -91,9 +92,9 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
     } catch (Throwable t) {
       throw ExceptionUtil.unwrapThrowable(t);
     }
-    //会对方法进行缓存
+    //会对方法进行缓存 这里加入缓存是为了提升 MapperMethod 的获取速度：
     final MapperMethod mapperMethod = cachedMapperMethod(method);
-    //执行，并返回结果
+    //执行，并返回结果 ,最后是调用的sql session de 方法
     return mapperMethod.execute(sqlSession, args);
   }
 

@@ -88,6 +88,8 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
   }
 
   /**
+   * 主要是创建一个执行器，并返回一个 DefaultSqlSession 对象，核心的session，和 txmanage 还是由执行器来管理
+   *
    * @param execType   执行器类型
    * @param level      事务隔离级别
    * @param autoCommit 是否自动提交

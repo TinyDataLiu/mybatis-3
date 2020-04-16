@@ -576,8 +576,10 @@ public class Configuration {
     return MetaObject.forObject(object, objectFactory, objectWrapperFactory, reflectorFactory);
   }
 
+  /*这三个对象都是可以被插件拦截的四大对象之一，所以在创建之后都要用拦截器进行包装的方法。*/
   public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
     ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundSql);
+    /*拦截器封装*/
     parameterHandler = (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
     return parameterHandler;
   }
@@ -601,7 +603,9 @@ public class Configuration {
    * @return
    */
   public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+    // 创建一个RoutingStatementHandler
     StatementHandler statementHandler = new RoutingStatementHandler(executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
+    /*拦截器封装，*/
     statementHandler = (StatementHandler) interceptorChain.pluginAll(statementHandler);
     return statementHandler;
   }
@@ -611,7 +615,7 @@ public class Configuration {
   }
 
   /**
-   * 创建一个SQL 执行器
+   * 创建一个SQL 执行器 ，事务和数据源是在创建执行器的时候就用到了
    *
    * @param transaction
    * @param executorType
@@ -628,7 +632,7 @@ public class Configuration {
     } else {
       executor = new SimpleExecutor(this, transaction);
     }
-    //通过判断是否开启了二级缓存，而选择是否对执行器进行代理
+    //通过判断是否开启了二级缓存，而选择是否对执行器进行代理，配置的话会在原有的包装器上进行封装
     if (cacheEnabled) {
       executor = new CachingExecutor(executor);
     }
