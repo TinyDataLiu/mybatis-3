@@ -26,23 +26,25 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * 默认事物
+ * 默认的事务管理器，最后调用的还是原生 connection 的事务
  * {@link Transaction} that makes use of the JDBC commit and rollback facilities directly.
  * It relies on the connection retrieved from the dataSource to manage the scope of the transaction.
  * Delays connection retrieval until getConnection() is called.
  * Ignores commit or rollback requests when autocommit is on.
  *
  * @author Clinton Begin
- *
  * @see JdbcTransactionFactory
  */
 public class JdbcTransaction implements Transaction {
 
   private static final Log log = LogFactory.getLog(JdbcTransaction.class);
-
+  // 连接
   protected Connection connection;
+  // 数据源
   protected DataSource dataSource;
+  // 事务隔离级别
   protected TransactionIsolationLevel level;
+  // 是否自动提交
   protected boolean autoCommit;
 
   public JdbcTransaction(DataSource ds, TransactionIsolationLevel desiredLevel, boolean desiredAutoCommit) {
@@ -63,6 +65,11 @@ public class JdbcTransaction implements Transaction {
     return connection;
   }
 
+  /**
+   * 这里还是根据connection 是不是自动提交，如果是，调用也没有意义
+   *
+   * @throws SQLException
+   */
   @Override
   public void commit() throws SQLException {
     if (connection != null && !connection.getAutoCommit()) {
@@ -136,8 +143,10 @@ public class JdbcTransaction implements Transaction {
     if (log.isDebugEnabled()) {
       log.debug("Opening JDBC Connection");
     }
+    // dataSource ,获取connection
     connection = dataSource.getConnection();
     if (level != null) {
+      // 通过connection 设置事务的隔离级别
       connection.setTransactionIsolation(level.getLevel());
     }
     setDesiredAutoCommit(autoCommit);
