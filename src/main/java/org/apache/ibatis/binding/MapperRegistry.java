@@ -15,16 +15,16 @@
  */
 package org.apache.ibatis.binding;
 
+import org.apache.ibatis.builder.annotation.MapperAnnotationBuilder;
+import org.apache.ibatis.io.ResolverUtil;
+import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.session.SqlSession;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.ibatis.builder.annotation.MapperAnnotationBuilder;
-import org.apache.ibatis.io.ResolverUtil;
-import org.apache.ibatis.session.Configuration;
-import org.apache.ibatis.session.SqlSession;
 
 /**
  * 获取MapperRegistry 获取mapper
@@ -61,6 +61,7 @@ public class MapperRegistry {
   }
 
   public <T> void addMapper(Class<T> type) {
+    /*判断是否是 接口*/
     if (type.isInterface()) {
       if (hasMapper(type)) {
         throw new BindingException("Type " + type + " is already known to the MapperRegistry.");
@@ -72,9 +73,11 @@ public class MapperRegistry {
         // otherwise the binding may automatically be attempted by the
         // mapper parser. If the type is already known, it won't try.
         MapperAnnotationBuilder parser = new MapperAnnotationBuilder(config, type);
+        // 放入全局配置文件中
         parser.parse();
         loadCompleted = true;
       } finally {
+        //如果没有完成就移除
         if (!loadCompleted) {
           knownMappers.remove(type);
         }
@@ -90,6 +93,8 @@ public class MapperRegistry {
   }
 
   /**
+   * 通过包名注册 mapper
+   *
    * @since 3.2.2
    */
   public void addMappers(String packageName, Class<?> superType) {
